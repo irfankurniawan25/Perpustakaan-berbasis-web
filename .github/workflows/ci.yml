@@ -1,0 +1,12 @@
+name: CI
+on:
+  pull_request:
+    branches: [ "main", "dev/project" ]
+  push:
+    branches: [ "main", "dev/project" ]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - run: echo "OK - branch siap"

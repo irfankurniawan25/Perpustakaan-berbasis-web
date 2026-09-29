@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelola Buku - PustakaDigital</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml"
+        href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='22' fill='%237C3AED'/%3E%3Ctext x='50%25' y='55%25' dominant-baseline='middle' text-anchor='middle' font-family='Arial' font-weight='800' font-size='58' fill='white'%3EP%3C/text%3E%3C/svg%3E">
+    <link rel="stylesheet" href="../assets/css/style.css">
+</head>
+
+<body>
+    <!-- ================= SIDEBAR ================= -->
+    <aside id="sidebar" class="sidebar">
+        <a class="navbar-brand d-flex align-items-center gap-2 mb-4 px-2" href="../index.html">
+            <span class="logo">P</span>
+            PustakaDigital
+        </a>
+
+        <nav class="nav flex-column">
+            <a class="nav-link" href="dashboard-admin.html">
+                <i class="bi bi-grid me-2"></i>Dashboard
+            </a>
+            <a class="nav-link" href="katalog.html">
+                <i class="bi bi-book me-2"></i>Katalog
+            </a>
+            <a class="nav-link active" href="kelola-buku.html">
+                <i class="bi bi-collection me-2"></i>Kelola Buku
+            </a>
+            <a class="nav-link" href="kelola-pengguna.html">
+                <i class="bi bi-people me-2"></i>Kelola Pengguna
+            </a>
+            <a class="nav-link" href="../index.html">
+                <i class="bi bi-house me-2"></i>Beranda
+            </a>
+            <a class="nav-link logout" href="login.html">
+                <i class="bi bi-box-arrow-right me-2"></i>Keluar
+            </a>
+        </nav>
+    </aside>
+
+    <!-- ================= MAIN ================= -->
+    <div class="main-with-sidebar">
+        <header class="topbar p-3">
+            <div class="d-flex align-items-center gap-3">
+                <button type="button" id="mobileMenu" class="btn btn-light mobile-menu" aria-label="Buka menu">
+                    <i class="bi bi-list"></i>
+                </button>
+                <div>
+                    <b>Kelola Buku</b>
+                    <div class="small text-secondary">
+                        Tambah, ubah, dan hapus data buku.
+                    </div>
+                </div>
+                <div class="ms-auto">
+                    <span class="badge bg-ungu-muda text-ungu">Admin</span>
+                </div>
+            </div>
+        </header>
+
+        <main class="container-fluid p-4">
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                <div>
+                    <h2 class="page-title">Kelola Buku</h2>
+                    <p class="text-secondary mb-0">Semua data buku yang tersimpan di PustakaDigital.</p>
+                </div>
+                <button class="btn btn-ungu" data-bs-toggle="modal" data-bs-target="#modalBuku"
+                    onclick="bukaModalTambah()">
+                    <i class="bi bi-plus-lg me-1"></i>Tambah Buku
+                </button>
+            </div>
+
+            <div class="table-card">
+                <div class="row g-2 align-items-center mb-3">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0">
+                                <i class="bi bi-search text-secondary"></i>
+                            </span>
+                            <input id="cariBukuAdmin" type="search" class="form-control border-start-0"
+                                placeholder="Cari judul atau penulis..." oninput="cariBukuAdmin()">
+                        </div>
+                    </div>
+                    <div class="col-md-6 text-md-end">
+                        <span id="jumlahBukuAdmin" class="badge bg-ungu-muda text-ungu rounded-pill px-3 py-2">3
+                            Buku</span>
+                    </div>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table align-middle">
+                        <thead>
+                            <tr>
+                                <th>Judul</th>
+                                <th>Penulis</th>
+                                <th>Kategori</th>
+                                <th>Penerbit</th>
+                                <th>Tahun</th>
+                                <th>Halaman</th>
+                                <th>Stok</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tabelBukuAdmin"></tbody>
+                    </table>
+                </div>
+
+                <div id="tabelBukuKosong" class="text-center py-5 d-none">
+                    <i class="bi bi-inbox" style="font-size:2.5rem;color:var(--abu)"></i>
+                    <p class="text-secondary mt-2 mb-0">Tidak ada buku yang cocok.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= MODAL TAMBAH / EDIT ================= -->
+    <!-- ================= MODAL TAMBAH / EDIT ================= -->
+    <div class="modal fade" id="modalBuku" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable modal-lg">
+            <div class="modal-content" style="border-radius:16px; max-height:90vh; overflow-y:auto; overflow-x:hidden">
+                <div class="modal-header border-0">
+                    <h5 class="modal-title fw-bold" id="modalBukuTitle">Tambah Buku</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <form id="formBuku" onsubmit="simpanBuku(event)">
+                    <div class="modal-body" style="overflow-y:auto; overflow-x:hidden;">
+                        <input type="hidden" id="bukuBarisAktif">
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Judul</label>
+                            <input id="inputJudul" type="text" class="form-control" placeholder="Judul buku" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Penulis</label>
+                            <input id="inputPenulis" type="text" class="form-control" placeholder="Nama penulis"
+                                required>
+                        </div>
+                        <div class="row g-3">
+                            <div class="col-7">
+                                <label class="form-label fw-semibold">Kategori</label>
+                                <select id="inputKategori" class="form-select">
+                                    <option>Pengembangan Diri</option>
+                                    <option>Teknologi</option>
+                                    <option>Novel</option>
+                                    <option>Sejarah</option>
+                                </select>
+                            </div>
+                            <div class="col-5">
+                                <label class="form-label fw-semibold">Stok</label>
+                                <input id="inputStok" type="number" min="0" class="form-control" value="1" required>
+                            </div>
+                        </div>
+                        <div class="row g-3 mt-0">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-semibold">Penerbit</label>
+                                <input id="inputPenerbit" type="text" class="form-control" placeholder="Nama penerbit">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="form-label fw-semibold">Tahun</label>
+                                <input id="inputTahun" type="number" min="1000" max="2100" class="form-control"
+                                    placeholder="2024">
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <label class="form-label fw-semibold">Halaman</label>
+                                <input id="inputHalaman" type="number" min="1" class="form-control" placeholder="320">
+                            </div>
+                        </div>
+                        <div class="mt-3">
+                            <label class="form-label fw-semibold">Sinopsis</label>
+                            <textarea id="inputSinopsis" class="form-control" rows="4"
+                                placeholder="Ringkasan isi buku..."></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer border-0">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Batal</button>
+                        <button type="submit" class="btn btn-ungu">
+                            <i class="bi bi-check-lg me-1"></i>Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index:1080">
+        <div id="toastAdmin" class="toast border-0" role="alert"
+            style="background:var(--gelap); color:white; border-radius:12px">
+            <div class="d-flex align-items-center">
+                <div class="toast-body d-flex align-items-center gap-2">
+                    <span
+                        style="width:32px;height:32px;border-radius:8px;background:var(--ungu);display:inline-flex;align-items:center;justify-content:center">
+                        <i class="bi bi-check-lg"></i>
+                    </span>
+                    <span id="toastAdminMsg">Berhasil disimpan</span>
+                </div>
+                <button type="button" class="btn-close btn-close-white me-3" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="../assets/js/script.js"></script>
+
+    <!-- Kode Kelola Buku (mandiri, tersimpan otomatis di localStorage) -->
+    <script>
+        (function () {
+            var KEY = "pustaka_buku_v2";
+            var awal = [
+                {
+                    judul: "Atomic Habits", penulis: "James Clear", kategori: "Pengembangan Diri", penerbit: "Avery", tahun: 2018, halaman: 320, stok: 12,
+                    sinopsis: "Perubahan kecil yang dilakukan secara konsisten dapat membentuk kebiasaan baik dan menghasilkan perubahan besar dalam hidup."
+                },
+                {
+                    judul: "Clean Code", penulis: "Robert C. Martin", kategori: "Teknologi", penerbit: "Prentice Hall", tahun: 2008, halaman: 464, stok: 7,
+                    sinopsis: "Panduan menulis kode yang bersih, mudah dibaca, dan mudah dirawat oleh seluruh tim pengembang."
+                },
+                {
+                    judul: "Bumi Manusia", penulis: "Pramoedya Ananta Toer", kategori: "Novel", penerbit: "Hasta Mitra", tahun: 1980, halaman: 535, stok: 0,
+                    sinopsis: "Kisah Minke, pribumi terpelajar pada masa kolonial, yang bergulat dengan cinta, keadilan, dan jati diri bangsanya."
+                }
+            ];
+            var buku = muat();
+            var idxEdit = null;
+
+            function lengkapi(b) {
+                return {
+                    judul: b.judul || "",
+                    penulis: b.penulis || "",
+                    kategori: b.kategori || "",
+                    penerbit: b.penerbit || "",
+                    tahun: b.tahun || "",
+                    halaman: b.halaman || "",
+                    stok: parseInt(b.stok, 10) || 0,
+                    sinopsis: b.sinopsis || ""
+                };
+            }
+            function muat() {
+                try {
+                    var d = JSON.parse(localStorage.getItem(KEY));
+                    if (Array.isArray(d)) return d.map(lengkapi);
+                } catch (e) { }
+                return awal.map(lengkapi);
+            }
+            function simpan() {
+                try { localStorage.setItem(KEY, JSON.stringify(buku)); }
+                catch (e) { console.error("Gagal menyimpan:", e); }
+            }
+            function esc(t) {
+                var d = document.createElement("div");
+                d.textContent = t;
+                return d.innerHTML;
+            }
+            function strip(v) { return (v === "" || v == null) ? "-" : esc(String(v)); }
+            function toast(pesan) {
+                var el = document.getElementById("toastAdmin");
+                if (!el) return;
+                document.getElementById("toastAdminMsg").textContent = pesan;
+                bootstrap.Toast.getOrCreateInstance(el, { delay: 2500 }).show();
+            }
+
+            function render() {
+                var kw = document.getElementById("cariBukuAdmin").value.toLowerCase().trim();
+                var tbody = document.getElementById("tabelBukuAdmin");
+                var html = "", tampil = 0;
+                buku.forEach(function (b, i) {
+                    if (kw && b.judul.toLowerCase().indexOf(kw) === -1 &&
+                        b.penulis.toLowerCase().indexOf(kw) === -1) return;
+                    tampil++;
+                    var status = b.stok > 0
+                        ? '<span class="badge bg-success-subtle text-success">Tersedia</span>'
+                        : '<span class="badge bg-danger-subtle text-danger">Habis</span>';
+                    var sin = b.sinopsis
+                        ? '<div class="small text-secondary text-truncate" style="max-width:260px" title="' + esc(b.sinopsis).replace(/"/g, "&quot;") + '">' + esc(b.sinopsis) + '</div>'
+                        : '';
+                    html += '<tr class="baris-buku">' +
+                        '<td><b>' + esc(b.judul) + '</b>' + sin + '</td>' +
+                        '<td>' + esc(b.penulis) + '</td>' +
+                        '<td>' + esc(b.kategori) + '</td>' +
+                        '<td>' + strip(b.penerbit) + '</td>' +
+                        '<td>' + strip(b.tahun) + '</td>' +
+                        '<td>' + strip(b.halaman) + '</td>' +
+                        '<td>' + b.stok + '</td>' +
+                        '<td>' + status + '</td>' +
+                        '<td class="text-nowrap">' +
+                        '<button class="btn btn-sm btn-light" onclick="editBuku(' + i + ')"><i class="bi bi-pencil"></i></button> ' +
+                        '<button class="btn btn-sm btn-light text-danger" onclick="hapusBuku(' + i + ')"><i class="bi bi-trash"></i></button>' +
+                        '</td></tr>';
+                });
+                tbody.innerHTML = html;
+                document.getElementById("jumlahBukuAdmin").textContent = tampil + " Buku";
+                document.getElementById("tabelBukuKosong").classList.toggle("d-none", tampil !== 0);
+            }
+
+            window.bukaModalTambah = function () {
+                idxEdit = null;
+                document.getElementById("modalBukuTitle").textContent = "Tambah Buku";
+                document.getElementById("formBuku").reset();
+                document.getElementById("inputStok").value = 1;
+            };
+
+            window.editBuku = function (i) {
+                var b = buku[i];
+                if (!b) return;
+                idxEdit = i;
+                document.getElementById("modalBukuTitle").textContent = "Edit Buku";
+                document.getElementById("inputJudul").value = b.judul;
+                document.getElementById("inputPenulis").value = b.penulis;
+                document.getElementById("inputKategori").value = b.kategori;
+                document.getElementById("inputPenerbit").value = b.penerbit;
+                document.getElementById("inputTahun").value = b.tahun;
+                document.getElementById("inputHalaman").value = b.halaman;
+                document.getElementById("inputStok").value = b.stok;
+                document.getElementById("inputSinopsis").value = b.sinopsis;
+                bootstrap.Modal.getOrCreateInstance(document.getElementById("modalBuku")).show();
+            };
+
+            window.simpanBuku = function (e) {
+                e.preventDefault();
+                var data = lengkapi({
+                    judul: document.getElementById("inputJudul").value.trim(),
+                    penulis: document.getElementById("inputPenulis").value.trim(),
+                    kategori: document.getElementById("inputKategori").value,
+                    penerbit: document.getElementById("inputPenerbit").value.trim(),
+                    tahun: parseInt(document.getElementById("inputTahun").value, 10) || "",
+                    halaman: parseInt(document.getElementById("inputHalaman").value, 10) || "",
+                    stok: document.getElementById("inputStok").value,
+                    sinopsis: document.getElementById("inputSinopsis").value.trim()
+                });
+                if (idxEdit !== null && buku[idxEdit]) {
+                    buku[idxEdit] = data;
+                    toast('Buku "' + data.judul + '" berhasil diperbarui.');
+                } else {
+                    buku.push(data);
+                    toast('Buku "' + data.judul + '" berhasil ditambahkan.');
+                }
+                idxEdit = null;
+                simpan();
+                render();
+                bootstrap.Modal.getOrCreateInstance(document.getElementById("modalBuku")).hide();
+            };
+
+            window.hapusBuku = function (i) {
+                var b = buku[i];
+                if (!b) return;
+                if (confirm('Hapus buku "' + b.judul + '" dari daftar?')) {
+                    buku.splice(i, 1);
+                    simpan();
+                    render();
+                    toast('Buku "' + b.judul + '" berhasil dihapus.');
+                }
+            };
+
+            window.cariBukuAdmin = render;
+
+            render();
+        })();
+    </script>
+</body>
+
+</html>
